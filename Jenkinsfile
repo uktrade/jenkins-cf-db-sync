@@ -52,10 +52,12 @@ pipeline {
               }
 
               src = params.cf_src.split("/")
+              src_port = sh(script: "echo $((1 + RANDOM % 65535))", returnStdout: true).trim()
               dest = params.cf_dest.split("/")
+              dest_port = sh(script: "echo $((1 + RANDOM % 65535))", returnStdout: true).trim()
               sh "cf target -o ${src[0]} -s ${src[1]}"
               sh """
-                cf conduit --org ${dest[0]} --space ${dest[1]} --no-interactive --verbose src[2] dest[3]
+                cf conduit -p ${src_port} --no-interactive --verbose src[2] -- pg_dump | cf conduit -p ${dest_port} --org ${dest[0]} --space ${dest[1]} --no-interactive --verbose dest[3] -- psql
               """
             }
           }
