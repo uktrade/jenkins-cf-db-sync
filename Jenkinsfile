@@ -56,7 +56,7 @@ pipeline {
               echo "\u001B[32mINFO: Purge destination database ${dest[2]}.\u001B[m"
               sh "cf target -o ${dest[0]} -s ${dest[1]}"
               sh """
-                cf conduit -p $((1024 + RANDOM % 54511)) ${dest[2]} -- sql < purge.sql
+                cf conduit -p \$((1024 + RANDOM % 54511)) ${dest[2]} -- sql < purge.sql
               """
               echo "\u001B[32mINFO: Restoring database from src[2] to ${dest[2]}.\u001B[m"
               sh "cf target -o ${src[0]} -s ${src[1]}"
