@@ -61,7 +61,7 @@ pipeline {
               echo "\u001B[32mINFO: Restoring database from src[2] to ${dest[2]}.\u001B[m"
               sh "cf target -o ${src[0]} -s ${src[1]}"
               sh """
-                cf conduit -p `1024 + RANDOM % 54511` --no-interactive ${src[2]} -- pg_dump -O -x --disable-triggers | sed -e '/PostgreSQL database dump complete/s/\$/\n\\\q/' | cf conduit -p `1024 + RANDOM % 54511` --org ${dest[0]} --space ${dest[1]} --no-interactive ${dest[2]} -- psql
+                cf conduit -p `1024 + RANDOM % 54511` --no-interactive ${src[2]} -- pg_dump -O -x --disable-triggers | cf conduit -p `1024 + RANDOM % 54511` --org ${dest[0]} --space ${dest[1]} --no-interactive ${dest[2]} -- psql
               """
             }
           }
