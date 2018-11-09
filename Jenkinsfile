@@ -52,12 +52,16 @@ pipeline {
               }
 
               src = params.cf_src.split("/")
-              src_port = sh(script: "echo $((1 + RANDOM % 65535))", returnStdout: true).trim()
               dest = params.cf_dest.split("/")
-              dest_port = sh(script: "echo $((1 + RANDOM % 65535))", returnStdout: true).trim()
+              echo "\u001B[32mINFO: Purge destination database ${dest[2]}.\u001B[m"
+              sh "cf target -o ${dest[0]} -s ${dest[1]}"
+              sh """
+                cf conduit -p $((1 + RANDOM % 65535)) ${dest[2]} -- sql < purge.sql
+              """
+              echo "\u001B[32mINFO: Restoring database from src[2] to ${dest[2]}.\u001B[m"
               sh "cf target -o ${src[0]} -s ${src[1]}"
               sh """
-                cf conduit -p ${src_port} --no-interactive --verbose src[2] -- pg_dump | cf conduit -p ${dest_port} --org ${dest[0]} --space ${dest[1]} --no-interactive --verbose dest[3] -- psql
+                cf conduit -p $((1 + RANDOM % 65535)) --no-interactive src[2] -- pg_dump -O -x --disable-triggers | sed -e '/PostgreSQL database dump complete/s/$/\n\\\q/' | cf conduit -p $((1 + RANDOM % 65535)) --org ${dest[0]} --space ${dest[1]} --no-interactive dest[2] -- psql
               """
             }
           }
