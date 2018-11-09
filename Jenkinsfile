@@ -56,12 +56,12 @@ pipeline {
               echo "\u001B[32mINFO: Purge destination database ${dest[2]}.\u001B[m"
               sh "cf target -o ${dest[0]} -s ${dest[1]}"
               sh """
-                cf conduit -p \\\$((1 + RANDOM % 65535)) ${dest[2]} -- sql < purge.sql
+                cf conduit -p `shuf -i1024-65535 -n1 -z` ${dest[2]} -- psql < purge.sql
               """
               echo "\u001B[32mINFO: Restoring database from src[2] to ${dest[2]}.\u001B[m"
               sh "cf target -o ${src[0]} -s ${src[1]}"
               sh """
-                cf conduit -p \\\$((1 + RANDOM % 65535)) --no-interactive ${src[2]} -- pg_dump -O -x --disable-triggers | cf conduit -p \\\$((1 + RANDOM % 65535)) --org ${dest[0]} --space ${dest[1]} --no-interactive ${dest[2]} -- psql
+                cf conduit -p `shuf -i1024-65535 -n1 -z` --no-interactive ${src[2]} -- pg_dump -O -x --disable-triggers | cf conduit -p `shuf -i1024-65535 -n1 -z` --org ${dest[0]} --space ${dest[1]} --no-interactive ${dest[2]} -- psql
               """
             }
           }
