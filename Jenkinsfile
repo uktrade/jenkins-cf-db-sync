@@ -14,7 +14,7 @@ pipeline {
   parameters {
     string(defaultValue: '', description:'Please enter app: [org/space/service]', name: 'cf_src')
     string(defaultValue: '', description:'Please enter app: [org/space/service]', name: 'cf_dest')
-    string(defaultValue: 'eu-west-1', description:'Please enter region: ', name: 'cf_region')
+    string(defaultValue: 'eu-west-2', description:'Please enter region: ', name: 'cf_region')
   }
 
   stages {
